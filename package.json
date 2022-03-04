@@ -1,0 +1,27 @@
+{
+  "name": "compara2r",
+  "version": "1.0.0",
+  "description": "Find out the best thing among a dataset through 1-vs-1 comparisons",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "live": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NitroGuy10/Compara2r.git"
+  },
+  "author": "NitroGuy10",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/NitroGuy10/Compara2r/issues"
+  },
+  "homepage": "https://github.com/NitroGuy10/Compara2r#readme",
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "pg": "^8.7.3",
+    "socket.io": "^4.4.1"
+  }
+}

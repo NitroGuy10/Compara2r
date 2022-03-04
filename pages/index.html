@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compara2r</title>
+</head>
+<body>
+    <h1>Compara2r</h1>
+    <br>
+
+    <form id="login">
+        <label for="login-username">Email:</label>
+        <input type="text" id="login-username" name="username"> 
+        <label for="login-Password">Password:</label>
+        <input type="password" id="login-password" name="password">
+        <input type="submit" value="Submit" id="login-submit">
+    </form>
+
+    <script src="/static/socket.io.js"></script>
+    <script>
+        let socket = io()
+
+        let form = document.getElementById("login")
+        let username = document.getElementById("login-username")
+        let password = document.getElementById("login-password")
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault()
+            if (username.value && password.value)
+            {
+                let credentials = {
+                    "username": username.value,
+                    "password": password.value
+                }
+                socket.emit("login", credentials)
+            }
+        })
+
+    </script>
+</body>
+</html>
