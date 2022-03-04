@@ -5,21 +5,74 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compara2r</title>
-</head>
-<body>
-    <h1>Compara2r</h1>
 
-    
-
-    <script src="/static/socket.io.js"></script>
-    <script>
-        let socket = io()
-
-        socket.on("prompt comparison", (items) =>
+    <style>
+        body
         {
-            // TODO
-        })
+            text-align: center;
+            color: #ccc;
+            background-color: #444;
+        }
 
+        table
+        {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        td
+        {
+            width: 500px;
+            display: inline-block;
+        }
+
+        .comp-display-cell
+        {
+            height: 300px;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body onload="getComparison()">
+    <h1>Compara2r</h1>
+    <table>
+        <tr id="comp-display-row">
+            <td class="comp-display-cell" id="comp-display-1"></td>
+            <td class="comp-display-cell" id="comp-display-2"></td>
+        </tr>
+        <tr>
+            <td id="comp-feedback-1">
+                <button id="1-better">Better</button>
+                <br>
+                <button id="1-flag">Flag</button>
+            </td>
+            <td id="comp-feedback-2">
+                <button id="2-better">Better</button>
+                <br>
+                <button id="2-flag">Flag</button>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        let line1 = ""
+        let line2 = ""
+
+        function getComparison ()
+        {
+            fetch("/comparison")
+            .then((response) => response.json())
+            .then((data) => {
+                line1 = data.line1
+                line2 = data.line2
+                document.getElementById("comp-display-1").innerText = data.text1;
+                document.getElementById("comp-display-2").innerText = data.text2;
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+        }
     </script>
 </body>
 </html>
