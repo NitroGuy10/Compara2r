@@ -19,23 +19,28 @@ app.get("/", (request, response) => {
     response.sendFile(__dirname + "/pages/index.html")
 })
 
+app.get("/results", (request, response) => {
+    // TODO send csv file of results
+    // each item in dataset with how many votes, how many flags, who voted for it (and how many times), who flagged it
+    // sorted by how many votes
+})
+
+app.get("/users", (request, response) => {
+    // TODO send csv file of users
+    // each user that ever submitted anything with how many things they voted for, how many things they flagged, what they voted for (and how many times), what they flagged
+    // sorted by number of votes
+})
+
+app.get("/dataset", (request, response) => {
+    // TODO send csv file of dataset
+    // the decimal line number, the base 64 line number, the item itself
+})
+
 io.on("connection", (socket) => {
     console.log("new connection! " + socket.handshake.address)
 
-    socket.on("login", (credentials) => {
-        if (credentials.username && credentials.password)
-        {
-            console.log("login: " + credentials.username + " " + credentials.password)
-
-            db.login(credentials, socket.handshake.address, (loginStatus, message) => {
-                console.log(loginStatus + ": " + message)
-                socket.emit(loginStatus, message)
-            })
-        }
-        else
-        {
-            socket.emit("login failure", "Invalid login payload")
-        }
+    socket.on("comparison result", (result) => {
+        // TODO
     })
 })
 

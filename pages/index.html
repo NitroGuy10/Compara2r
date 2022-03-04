@@ -9,47 +9,15 @@
 <body>
     <h1>Compara2r</h1>
 
-    <div id="login">
-        <p>Log in or create an account (it's all the same!)</p>
-        <form id="login-form">
-            <label for="login-username">Email:</label>
-            <input type="text" id="login-username" name="username"> 
-            <label for="login-Password">Password:</label>
-            <input type="password" id="login-password" name="password">
-            <input type="submit" value="Submit" id="login-submit">
-        </form>
-        <p id="login-status"></p>
-    </div>
     
 
     <script src="/static/socket.io.js"></script>
     <script>
         let socket = io()
 
-        let form = document.getElementById("login")
-        let username = document.getElementById("login-username")
-        let password = document.getElementById("login-password")
-
-        form.addEventListener("submit", (event) => {
-            event.preventDefault()
-            if (username.value && password.value)
-            {
-                let credentials = {
-                    "username": username.value,
-                    "password": password.value
-                }
-                socket.emit("login", credentials)
-            }
-        })
-
-        socket.on("login success", () =>
+        socket.on("prompt comparison", (items) =>
         {
-            document.getElementById("login").hidden = true
-        })
-        
-        socket.on("login failure", (message) =>
-        {
-            document.getElementById("login-status").innerText = message
+            // TODO
         })
 
     </script>

@@ -11,7 +11,7 @@ const client = new Client({
 
 client.connect()
 
-client.query("CREATE TABLE compara2r_users (username TEXT, password_hash TEXT, last_ip TEXT, votes TEXT, flags TEXT);", (error, response) => {
+client.query("CREATE TABLE compara2r_users (ip_hash TEXT, votes TEXT, flags TEXT);", (error, response) => {
     if (error)
     {
         console.log(error.stack)
