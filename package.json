@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "live": "nodemon index.js"
+    "live": "nodemon index.js",
+    "create_database": "node create_database.js",
+    "delete_database": "node delete_database.js"
   },
   "repository": {
     "type": "git",

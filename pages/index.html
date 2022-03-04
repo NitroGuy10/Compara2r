@@ -8,15 +8,19 @@
 </head>
 <body>
     <h1>Compara2r</h1>
-    <br>
 
-    <form id="login">
-        <label for="login-username">Email:</label>
-        <input type="text" id="login-username" name="username"> 
-        <label for="login-Password">Password:</label>
-        <input type="password" id="login-password" name="password">
-        <input type="submit" value="Submit" id="login-submit">
-    </form>
+    <div id="login">
+        <p>Log in or create an account (it's all the same!)</p>
+        <form id="login-form">
+            <label for="login-username">Email:</label>
+            <input type="text" id="login-username" name="username"> 
+            <label for="login-Password">Password:</label>
+            <input type="password" id="login-password" name="password">
+            <input type="submit" value="Submit" id="login-submit">
+        </form>
+        <p id="login-status"></p>
+    </div>
+    
 
     <script src="/static/socket.io.js"></script>
     <script>
@@ -36,6 +40,16 @@
                 }
                 socket.emit("login", credentials)
             }
+        })
+
+        socket.on("login success", () =>
+        {
+            document.getElementById("login").hidden = true
+        })
+        
+        socket.on("login failure", (message) =>
+        {
+            document.getElementById("login-status").innerText = message
         })
 
     </script>
