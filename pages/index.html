@@ -32,28 +32,40 @@
             overflow-x: hidden;
             overflow-y: auto;
         }
+        
+        #comp-display-row
+        {
+            font-size: 30px;
+        }
+
+        button
+        {
+            padding: 10px;
+        }
     </style>
 </head>
 <body onload="getComparison()">
+    <!-- TODO better frontend with Tailwind -->
     <h1>Compara2r</h1>
     <table>
         <tr id="comp-display-row">
             <td class="comp-display-cell" id="comp-display-1"></td>
             <td class="comp-display-cell" id="comp-display-2"></td>
         </tr>
-        <tr>
+        <tr id="comp-feedback">
             <td id="comp-feedback-1">
-                <button id="1-better">Better</button>
+                <button id="1-better" onclick="sendFeedback(1, false)">Better</button>
                 <br>
-                <button id="1-flag">Flag</button>
+                <button id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
             </td>
             <td id="comp-feedback-2">
-                <button id="2-better">Better</button>
+                <button id="2-better" onclick="sendFeedback(2, false)">Better</button>
                 <br>
-                <button id="2-flag">Flag</button>
+                <button id="2-flag" onclick="sendFeedback(2, true)">Flag</button>
             </td>
         </tr>
     </table>
+    <button id="skip" onclick="getComparison()">Skip</button>
 
     <script>
         let line1 = ""
@@ -66,8 +78,75 @@
             .then((data) => {
                 line1 = data.line1
                 line2 = data.line2
-                document.getElementById("comp-display-1").innerText = data.text1;
-                document.getElementById("comp-display-2").innerText = data.text2;
+                document.getElementById("comp-display-1").innerText = data.text1
+                document.getElementById("comp-display-2").innerText = data.text2
+
+                document.getElementById("1-better").disabled = false
+                document.getElementById("1-flag").disabled = false
+                document.getElementById("2-better").disabled = false
+                document.getElementById("2-flag").disabled = false
+            })
+            .catch((error) => {
+                console.error(error)
+            })
+        }
+
+        function sendFeedback (whichOne, isFlag)
+        {
+            let line
+            let passUpLine
+            if (whichOne == 1)
+            {
+                line = line1
+                passUpLine = line2
+            }
+            else
+            {
+                line = line2
+                passUpLine = line1
+            }
+
+            if (isFlag)
+            {
+                document.getElementById("1-better").disabled = true
+                document.getElementById("2-better").disabled = true
+                if (whichOne == 1)
+                {
+                    document.getElementById("1-flag").disabled = true
+                }
+                else
+                {
+                    document.getElementById("2-flag").disabled = true
+                }
+            }
+
+            const feedback = {
+                voteLine: line,
+                passUpLine: passUpLine,
+                isFlag: isFlag
+            }
+
+            fetch("/comparison", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(feedback)
+            })
+            .then((response) => response.json())
+            .then((data) => {
+                if (!isFlag)
+                {
+                    document.getElementById("comp-display-1").innerText = ""
+                    document.getElementById("comp-display-2").innerText = ""
+
+                    document.getElementById("1-better").disabled = true
+                    document.getElementById("1-flag").disabled = true
+                    document.getElementById("2-better").disabled = true
+                    document.getElementById("2-flag").disabled = true
+
+                    getComparison()
+                }  
             })
             .catch((error) => {
                 console.error(error)

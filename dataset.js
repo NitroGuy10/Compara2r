@@ -20,7 +20,10 @@ function findNumLines ()
     numLines = 0
 
     interface.on("line", (line) => {
-        numLines++
+        if (line !== "")
+        {
+            numLines++
+        }
     })    
 }
 
