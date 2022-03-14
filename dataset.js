@@ -34,6 +34,7 @@ function getNumLines ()
 
 function getLine (lineNumber, callback)
 {
+    // Lines should be JSON strings (surrounded by quotation marks with necessary characters escaped)
     let interface = readline.createInterface({
         input: fs.createReadStream(__dirname + fileName)
     })
@@ -44,7 +45,7 @@ function getLine (lineNumber, callback)
         linesElapsed++
         if (linesElapsed == lineNumber)
         {
-            callback(line)
+            callback(JSON.parse(line))
             interface.close()
         }
     })

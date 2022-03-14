@@ -19,11 +19,11 @@ app.get("/", (request, response) => {
 })
 
 app.get("/comparison", (request, response) => {
-    const line1 = Math.floor(Math.random() * (dataset.getNumLines() - 1)) + 1
+    const line1 = Math.floor(Math.random() * (dataset.getNumLines())) + 1
     let line2
     do
     {
-        line2 = Math.floor(Math.random() * (dataset.getNumLines() - 1)) + 1
+        line2 = Math.floor(Math.random() * (dataset.getNumLines())) + 1
     }
     while (line2 == line1)
 
@@ -35,17 +35,17 @@ app.get("/comparison", (request, response) => {
                 line2: line2,
                 text2: text2
             }
+            
+            db.storePrompt(db.makeHash(request.ip), [line1, line2])
             response.send(comparison)
         })
     })
 })
 
 app.post("/comparison", (request, response) => {
-    console.log(request.body)
-
     if (request.body.voteLine && typeof request.body.voteLine === "number" && request.body.passUpLine && typeof request.body.passUpLine === "number" && request.body.isFlag != undefined && typeof request.body.isFlag === "boolean")
     {
-        db.vote(request.ip, request.body)
+        db.vote(db.makeHash(request.ip), request.body)
     }
 
     response.send({ })
