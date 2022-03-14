@@ -6,6 +6,7 @@
 // pass ups (line numbers of things the user passed up on)
 // flags (line numbers of things the user flagged)
 // latest prompt (two line numbers that were sent to the user in their last comparison GET)
+// latest vote (two line numbers that were voted upon by the user in their last comparison POST)
 
 module.exports = {
     vote,
@@ -22,6 +23,7 @@ const pool = new Pool({
 })
 
 const { createHash } = require("crypto")
+const { contentDisposition } = require("express/lib/utils")
 
 function vote (ipAddress, data)
 {
@@ -31,8 +33,10 @@ function vote (ipAddress, data)
     getUser(ipAddress, (user) => {
         if (user == null)
         {
-            console.log("user " + ipAddress + " voted without ever being prompted!")
-            blacklist(ipAddress)
+            // The server could get to this point for two reasons
+            // 1) The database was reset and a user already had a Compara2r tab open and then voted
+            // 2) A bad actor POSTs a vote before ever GETing a comparison (this shouldn't cause any disruption, though)
+            // In my opinion, this isn't cause for blacklisting
         }
         else
         {
@@ -45,8 +49,10 @@ function vote (ipAddress, data)
                 }
                 else
                 {
-                    if (user.latest_prompt[0] == data.voteLine && user.latest_prompt[1] == data.passUpLine ||
-                        user.latest_prompt[1] == data.voteLine && user.latest_prompt[0] == data.passUpLine)  // i.e. the vote the user is casting matches the latest prompt they were given
+                    if ((user.latest_prompt[0] == data.voteLine && user.latest_prompt[1] == data.passUpLine ||
+                        user.latest_prompt[1] == data.voteLine && user.latest_prompt[0] == data.passUpLine) &&  // <--- i.e. the vote the user is casting matches the latest prompt they were given
+                        (user.latest_vote.length == 0 ||
+                        user.latest_prompt[0] != user.latest_vote[0] && user.latest_prompt[0] != user.latest_vote[0]))    // <--- i.e. the user has not already voted for this prompt
                     {
                         // Actually cast the vote
                         const newElementIndex = user.votes.length + 1
@@ -54,14 +60,14 @@ function vote (ipAddress, data)
         
                         if (data.isFlag)
                         {
-                            pool.query("UPDATE compara2r_users SET flags["+ newFlagIndex +"]=$1 WHERE ip_hash=$2;", [data.voteLine, ipAddress], (error, response) => {
-                                if (error) { console.log(error.stack) }
+                            pool.query("UPDATE compara2r_users SET flags["+ newFlagIndex +"]=$1, latest_vote=$2 WHERE ip_hash=$3;", [data.voteLine, user.latest_prompt, ipAddress], (error, response) => {
+                                if (error) { console.error(error.stack) }
                             })
                         }
                         else
                         {
-                            pool.query("UPDATE compara2r_users SET votes["+ newElementIndex +"]=$1, passups["+ newElementIndex +"]=$2 WHERE ip_hash=$3;", [data.voteLine, data.passUpLine, ipAddress], (error, response) => {
-                                if (error) { console.log(error.stack) }
+                            pool.query("UPDATE compara2r_users SET votes["+ newElementIndex +"]=$1, passups["+ newElementIndex +"]=$2, latest_vote=$3 WHERE ip_hash=$4;", [data.voteLine, data.passUpLine, user.latest_prompt, ipAddress], (error, response) => {
+                                if (error) { console.error(error.stack) }
                             })
                         }
                     }
@@ -85,13 +91,13 @@ function storePrompt (ipAddress, prompt)
             pool.query("UPDATE compara2r_users SET latest_prompt=$2 WHERE ip_hash=$1;", [ipAddress, prompt], (error, response) => {
                 if (error)
                 {
-                    console.log(error.stack)
+                    console.error(error.stack)
                 }
             })
         }
         else
         {
-            createUser([ipAddress, false, [], [], [], prompt])
+            createUser([ipAddress, false, [], [], [], prompt, []])
         }
     })
 }
@@ -100,29 +106,13 @@ function storePrompt (ipAddress, prompt)
 
 function blacklist (ipAddress, callback)
 {
-    userExists(ipAddress, (exists) => {
-        if (exists)
-        {
-            pool.query("UPDATE compara2r_users SET blacklisted=TRUE WHERE ip_hash=$1;", [ipAddress], (error, response) => {
-                if (error1)
-                {
-                    console.log(error1.stack)
-                }
-                else
-                {
-                    console.log("user " + ipAddress + " blacklisted")
-                    if (callback)
-                    {
-                        callback()
-                    }
-                }
-            })
-        }
-        else
-        {
-            createUser([ipAddress, true, [], [], [], []])
-        }
-    })
+    // Creates a dummy user entry that is blacklisted
+    // If the user doesn't exist yet (i.e. they happen to become blacklisted before their comparison GET), then everything's fine
+    // If the user does exist, the dummy user entry will be detected when the user tries to do anything and the server will attempt to compact the user and any blacklist-dummies into one row (their data will be deleted as an added bonus (or side effect))
+    // Of course, this creates the possibility that a user could become blacklisted, never make a request again, and the dummy user persists
+    // TODO As such, I would need to account for this when exporting the database, most likely by checking each ip_hash in the table to ensure it only occurs once
+    console.log("user " + ipAddress + " blacklisted")
+    createUser([ipAddress, true, [], [], [], [], []])
 }
 
 function createUser (values, callback)
@@ -130,14 +120,14 @@ function createUser (values, callback)
     userExists(values[0], (exists) => {
         if (exists)
         {
-            console.log("user " + values[0] + " already exists! why are you trying to create them?")
+            console.warn("user " + values[0] + " already exists! why are you trying to create them?")
         }
         else
         {
-            pool.query("INSERT INTO compara2r_users VALUES ($1, $2, $3, $4, $5, $6);", values, (error, response) => {
+            pool.query("INSERT INTO compara2r_users VALUES ($1, $2, $3, $4, $5, $6, $7);", values, (error, response) => {
                 if (error)
                 {
-                    console.log(error.stack)
+                    console.error(error.stack)
                 }
                 if (callback)
                 {
@@ -153,7 +143,7 @@ function getUser (ipAddress, callback)
     pool.query("SELECT * FROM compara2r_users WHERE ip_hash=$1;", [ipAddress], (error, response) => {
         if (error)
         {
-            console.log(error.stack)
+            console.error(error.stack)
         }
         if (response.rows.length === 0)
         {
@@ -161,6 +151,35 @@ function getUser (ipAddress, callback)
         }
         else
         {
+            if (response.rows.length > 1)
+            {
+                // See if one of the duplicate rows is blacklisted
+                let isBlacklisted = false
+                for (let row of response.rows)
+                {
+                    if (row.blacklisted)
+                    {
+                        isBlacklisted = true
+                        break
+                    }
+                }
+
+                if (isBlacklisted)
+                {
+                    // Compact any blacklist-dummies into one blacklisted user
+                    pool.query("DELETE FROM compara2r_users WHERE ip_hash=$1", [ipAddress], (error, response) => {
+                        if (error)
+                        {
+                            console.error(error.stack)
+                        }
+                        blacklist(ipAddress)
+                    })
+                }
+                else
+                {
+                    console.error("user " + ipAddress + " appears more than once in the database!")
+                }
+            }
             callback(response.rows[0])
         } 
     })
@@ -175,7 +194,10 @@ function userExists (ipAddress, callback)
 
 function makeHash (string)
 {
+    /*
     const hash = createHash("sha256")
     hash.update(string)
     return hash.digest("hex")
+    */
+   return string
 }

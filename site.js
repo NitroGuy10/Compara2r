@@ -43,7 +43,11 @@ app.get("/comparison", (request, response) => {
 })
 
 app.post("/comparison", (request, response) => {
-    if (request.body.voteLine && typeof request.body.voteLine === "number" && request.body.passUpLine && typeof request.body.passUpLine === "number" && request.body.isFlag != undefined && typeof request.body.isFlag === "boolean")
+    if (request.body.voteLine && typeof request.body.voteLine === "number" &&
+        request.body.passUpLine && typeof request.body.passUpLine === "number" &&
+        request.body.isFlag != undefined && typeof request.body.isFlag === "boolean" &&
+        request.body.voteLine > 0 && request.body.voteLine <= dataset.getNumLines() &&
+        request.body.passUpLine > 0 && request.body.passUpLine <= dataset.getNumLines())
     {
         db.vote(db.makeHash(request.ip), request.body)
     }
