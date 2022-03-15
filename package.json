@@ -8,7 +8,8 @@
     "start": "node index.js",
     "live": "nodemon index.js",
     "create_database": "node create_database.js",
-    "delete_database": "node delete_database.js"
+    "delete_database": "node delete_database.js",
+    "build_tailwind": "npx tailwindcss -i ./style_src/main.css -o ./static/main.css"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,8 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.0.23"
   }
 }

@@ -6,67 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Compara2r</title>
 
-    <style>
-        body
-        {
-            text-align: center;
-            color: #ccc;
-            background-color: #444;
-        }
-
-        table
-        {
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        td
-        {
-            width: 500px;
-            display: inline-block;
-        }
-
-        .comp-display-cell
-        {
-            text-align: left;
-            height: 300px;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-        
-        #comp-display-row
-        {
-            font-size: 30px;
-        }
-
-        button
-        {
-            padding: 10px;
-        }
-    </style>
+    <link href="./static/main.css" rel="stylesheet">
 </head>
-<body onload="getComparison()">
-    <!-- TODO better frontend with Tailwind -->
-    <h1>Compara2r</h1>
-    <table>
-        <tr id="comp-display-row">
-            <td class="comp-display-cell" id="comp-display-1"></td>
-            <td class="comp-display-cell" id="comp-display-2"></td>
+<body onload="getComparison()" class="text-center text-zinc-300 bg-zinc-700">
+    <strong><h1 class="text-5xl mb-6">Compara2r</h1></strong>
+    <table class="mx-auto">
+        <tr class="text-2xl" id="comp-display-row">
+            <td class="w-[500px] inline-block text-left h-80 overflow-x-hidden overflow-y-auto" id="comp-display-1"></td>
+            <td class="w-[500px] inline-block text-left h-80 overflow-x-hidden overflow-y-auto" id="comp-display-2"></td>
         </tr>
         <tr id="comp-feedback">
-            <td id="comp-feedback-1">
-                <button id="1-better" onclick="sendFeedback(1, false)">Better</button>
+            <td class="w-[500px] inline-block" id="comp-feedback-1">
+                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-better" onclick="sendFeedback(1, false)">Better</button>
                 <br>
-                <button id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
+                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
             </td>
-            <td id="comp-feedback-2">
-                <button id="2-better" onclick="sendFeedback(2, false)">Better</button>
+            <td class="w-[500px] inline-block" id="comp-feedback-2">
+                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-better" onclick="sendFeedback(2, false)">Better</button>
                 <br>
-                <button id="2-flag" onclick="sendFeedback(2, true)">Flag</button>
+                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-flag" onclick="sendFeedback(2, true)">Flag</button>
             </td>
         </tr>
     </table>
-    <button id="skip" onclick="getComparison()">Skip</button>
+    <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="skip" onclick="getComparison()">Skip</button>
 
     <script>
         let line1 = ""
