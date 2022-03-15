@@ -50,25 +50,29 @@ function vote (ipAddress, data)
                 else
                 {
                     if ((user.latest_prompt[0] == data.voteLine && user.latest_prompt[1] == data.passUpLine ||
-                        user.latest_prompt[1] == data.voteLine && user.latest_prompt[0] == data.passUpLine) &&  // <--- i.e. the vote the user is casting matches the latest prompt they were given
-                        (user.latest_vote.length == 0 ||
-                        user.latest_prompt[0] != user.latest_vote[0] && user.latest_prompt[0] != user.latest_vote[0]))    // <--- i.e. the user has not already voted for this prompt
+                         user.latest_prompt[1] == data.voteLine && user.latest_prompt[0] == data.passUpLine))  // <--- i.e. the vote the user is casting matches the latest prompt they were given
                     {
-                        // Actually cast the vote
-                        const newElementIndex = user.votes.length + 1
-                        const newFlagIndex = user.flags.length + 1
-        
-                        if (data.isFlag)
+                        if (data.isFlag)  // Flagging doesn't require the user to have not voted on their current prompt (since 1. they can flag both items and 2. multiple flags for the same item are treated as one flag)
                         {
+                            // TODO multiple flags for the same item should treated as one flag when data is analyzed
+                            const newFlagIndex = user.flags.length + 1
                             pool.query("UPDATE compara2r_users SET flags["+ newFlagIndex +"]=$1, latest_vote=$2 WHERE ip_hash=$3;", [data.voteLine, user.latest_prompt, ipAddress], (error, response) => {
+                                if (error) { console.error(error.stack) }
+                            })
+                        }
+                        else if ((user.latest_vote.length == 0 ||
+                                 user.latest_prompt[0] != user.latest_vote[0] && user.latest_prompt[0] != user.latest_vote[0]))  // <--- i.e. the user has not already voted for this prompt
+                        {
+                            // Actually cast the vote
+                            const newElementIndex = user.votes.length + 1
+                            pool.query("UPDATE compara2r_users SET votes["+ newElementIndex +"]=$1, passups["+ newElementIndex +"]=$2, latest_vote=$3 WHERE ip_hash=$4;", [data.voteLine, data.passUpLine, user.latest_prompt, ipAddress], (error, response) => {
                                 if (error) { console.error(error.stack) }
                             })
                         }
                         else
                         {
-                            pool.query("UPDATE compara2r_users SET votes["+ newElementIndex +"]=$1, passups["+ newElementIndex +"]=$2, latest_vote=$3 WHERE ip_hash=$4;", [data.voteLine, data.passUpLine, user.latest_prompt, ipAddress], (error, response) => {
-                                if (error) { console.error(error.stack) }
-                            })
+                            // The user has already voted for this prompt and is trying to vote again
+                            // In this case, do nothing
                         }
                     }
                     else
