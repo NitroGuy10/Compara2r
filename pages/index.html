@@ -8,13 +8,19 @@
 
     <link href="./static/main.css" rel="stylesheet">
 </head>
-<body onload="getComparison()" class="text-center text-zinc-300 bg-zinc-700">
+<body onload="getComparison()" class="text-center text-[#355663] bg-[#a4dcff]">
     <strong><h1 class="text-5xl mb-6">Compara2r</h1></strong>
+
+    <div id="comp-display-row" class="flex flex-wrap lg:flex-row justify-center justify-items-center items-stretch h-full mx-[15%] lg:space-x-6 space-y-5 lg:space-y-0 text-2xl text-zinc-700 break-words">
+        <!-- TODO make these into clickable buttons with cool animations -->
+        <!-- TODO make this look better on mobile -->
+        <div id="comp-display-1" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl border-b-4 border-[#855177] shadow-md bg-[#ffa4c6] text-left overflow-x-hidden overflow-y-auto"><p>testing testing</p></div>
+        <div id="comp-display-2" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl border-b-4 border-[#855177] shadow-md bg-[#ffa4c6] text-left overflow-x-hidden overflow-y-auto"><p>stressing stressing</p></div>
+    </div>
+
+    <br>
+
     <table class="mx-auto">
-        <tr class="text-2xl" id="comp-display-row">
-            <td class="w-[500px] inline-block text-left h-80 overflow-x-hidden overflow-y-auto" id="comp-display-1"></td>
-            <td class="w-[500px] inline-block text-left h-80 overflow-x-hidden overflow-y-auto" id="comp-display-2"></td>
-        </tr>
         <tr id="comp-feedback">
             <td class="w-[500px] inline-block" id="comp-feedback-1">
                 <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-better" onclick="sendFeedback(1, false)">Better</button>
