@@ -518,6 +518,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   flex: none;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 .flex-wrap {
   flex-wrap: wrap;
 }
@@ -610,6 +614,10 @@ Ensure the default browser behavior of the `hidden` attribute.
   line-height: 2rem;
 }
 
+.font-semibold {
+  font-weight: 600;
+}
+
 .text-\[\#355663\] {
   --tw-text-opacity: 1;
   color: rgb(53 86 99 / var(--tw-text-opacity));
@@ -620,15 +628,53 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(63 63 70 / var(--tw-text-opacity));
 }
 
+.text-transparent {
+  color: transparent;
+}
+
 .shadow-md {
   --tw-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --tw-shadow-colored: 0 4px 6px -1px var(--tw-shadow-color), 0 2px 4px -2px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.transition {
+  transition-property: color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.hover\:bg-\[\#ffb3cf\]:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 179 207 / var(--tw-bg-opacity));
+}
+
+.active\:border-b-2:active {
+  border-bottom-width: 2px;
+}
+
 .disabled\:border-zinc-600:disabled {
   --tw-border-opacity: 1;
   border-color: rgb(82 82 91 / var(--tw-border-opacity));
+}
+
+.grayed-out {
+  cursor: default;
+  --tw-border-opacity: 1;
+  border-color: rgb(51 65 85 / var(--tw-border-opacity));
+  --tw-bg-opacity: 1;
+  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+}
+
+.grayed-out:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(148 163 184 / var(--tw-bg-opacity));
+}
+
+.grayed-out:active {
+  border-bottom-width: 4px;
 }
 
 @media (min-width: 1024px) {

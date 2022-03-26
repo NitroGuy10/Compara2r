@@ -12,10 +12,26 @@
     <strong><h1 class="text-5xl mb-6">Compara2r</h1></strong>
 
     <div id="comp-display-row" class="flex flex-wrap lg:flex-row justify-center justify-items-center items-stretch h-full mx-[15%] lg:space-x-6 space-y-5 lg:space-y-0 text-2xl text-zinc-700 break-words">
-        <!-- TODO make these into clickable buttons with cool animations -->
         <!-- TODO make this look better on mobile -->
-        <div id="comp-display-1" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl border-b-4 border-[#855177] shadow-md bg-[#ffa4c6] text-left overflow-x-hidden overflow-y-auto"><p>testing testing</p></div>
-        <div id="comp-display-2" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl border-b-4 border-[#855177] shadow-md bg-[#ffa4c6] text-left overflow-x-hidden overflow-y-auto"><p>stressing stressing</p></div>
+        <div id="comp-display-1" onclick="sendFeedback(1, false)" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl 
+         border-[#855177] grayed-out:border-slate-700 border-b-4 active:grayed-out:border-b-4 active:border-b-2 shadow-md 
+         bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400 
+         text-left overflow-x-hidden overflow-y-auto cursor-pointer grayed-out:cursor-default transition">
+            <p id="comp-display-1-text" class="font-semibold"></p>
+            <!-- TODO if you press the flag or copy buttons it presses the div and casts a vote -->
+            <!-- TODO If these buttons are inside the flex boxes, the text should scroll above it and the buttons should stay in place
+                 i.e it shouldn't be like theres a scoll pane and you have to scroll down to see the flag and copy buttons -->
+            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
+            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-copy" onclick="navigator.clipboard.writeText(text1)">Copy</button>
+        </div>
+        <div id="comp-display-2" onclick="sendFeedback(2, false)" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl 
+        border-[#855177] grayed-out:border-slate-700 border-b-4 active:grayed-out:border-b-4 active:border-b-2 shadow-md 
+        bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400 
+        text-left overflow-x-hidden overflow-y-auto cursor-pointer grayed-out:cursor-default transition">
+            <p id="comp-display-2-text" class="font-semibold"></p>
+            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-flag" onclick="sendFeedback(2, true)">Flag</button>
+            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-copy" onclick="navigator.clipboard.writeText(text2)">Copy</button>
+        </div>
     </div>
 
     <br>
@@ -23,13 +39,9 @@
     <table class="mx-auto">
         <tr id="comp-feedback">
             <td class="w-[500px] inline-block" id="comp-feedback-1">
-                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-better" onclick="sendFeedback(1, false)">Better</button>
-                <br>
                 <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
             </td>
             <td class="w-[500px] inline-block" id="comp-feedback-2">
-                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-better" onclick="sendFeedback(2, false)">Better</button>
-                <br>
                 <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-flag" onclick="sendFeedback(2, true)">Flag</button>
             </td>
         </tr>
@@ -37,22 +49,37 @@
     <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="skip" onclick="getComparison()">Skip</button>
 
     <script>
+        let text1 = ""
+        let text2 = ""
         let line1 = ""
         let line2 = ""
+
+        // An actual HTML "disabled" means that you cannot click and cast a vote
+        // Everything else is just for aesthetic purposes
 
         function getComparison ()
         {
             fetch("/comparison")
             .then((response) => response.json())
             .then((data) => {
+                text1 = data.text1
+                text2 = data.text2
                 line1 = data.line1
                 line2 = data.line2
-                document.getElementById("comp-display-1").innerText = data.text1
-                document.getElementById("comp-display-2").innerText = data.text2
 
-                document.getElementById("1-better").disabled = false
+                document.getElementById("comp-display-1-text").innerText = data.text1
+                document.getElementById("comp-display-2-text").innerText = data.text2
+
+                document.getElementById("comp-display-1").classList.remove("grayed-out")
+                document.getElementById("comp-display-1").classList.remove("text-transparent")
+                document.getElementById("comp-display-1").disabled = false
+        
                 document.getElementById("1-flag").disabled = false
-                document.getElementById("2-better").disabled = false
+                
+
+                document.getElementById("comp-display-2").classList.remove("grayed-out")
+                document.getElementById("comp-display-2").classList.remove("text-transparent")
+                document.getElementById("comp-display-2").disabled = false
                 document.getElementById("2-flag").disabled = false
             })
             .catch((error) => {
@@ -77,15 +104,26 @@
 
             if (isFlag)
             {
-                document.getElementById("1-better").disabled = true
-                document.getElementById("2-better").disabled = true
                 if (whichOne == 1)
                 {
+                    document.getElementById("comp-display-1").classList.add("grayed-out")
+                    document.getElementById("comp-display-1").disabled = true
                     document.getElementById("1-flag").disabled = true
                 }
                 else
                 {
+                    document.getElementById("comp-display-2").classList.add("grayed-out")
+                    document.getElementById("comp-display-2").disabled = true
                     document.getElementById("2-flag").disabled = true
+                }
+            }
+            else
+            {
+                // Don't do anything if you click on it and it's disabled
+                if ((whichOne == 1 && document.getElementById("comp-display-1").disabled) ||
+                    (whichOne == 2 && document.getElementById("comp-display-2").disabled))
+                {
+                    return
                 }
             }
 
@@ -106,12 +144,12 @@
             .then((data) => {
                 if (!isFlag)
                 {
-                    document.getElementById("comp-display-1").innerText = ""
-                    document.getElementById("comp-display-2").innerText = ""
+                    document.getElementById("comp-display-1").classList.add("text-transparent")
+                    document.getElementById("comp-display-2").classList.add("text-transparent")
 
-                    document.getElementById("1-better").disabled = true
+                    document.getElementById("comp-display-1").disabled = true
+                    document.getElementById("comp-display-1").disabled = true
                     document.getElementById("1-flag").disabled = true
-                    document.getElementById("2-better").disabled = true
                     document.getElementById("2-flag").disabled = true
 
                     getComparison()
@@ -121,6 +159,6 @@
                 console.error(error)
             })
         }
-    </script>
+        </script>
 </body>
 </html>
