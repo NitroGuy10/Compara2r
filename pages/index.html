@@ -9,11 +9,10 @@
     <link href="./static/main.css" rel="stylesheet">
 </head>
 <body onload="getComparison()" class="text-center text-[#355663] bg-[#a4dcff]">
-    <strong><h1 class="text-5xl mb-6">Compara2r</h1></strong>
+    <strong><h1 class="text-3xl sm:text-5xl mb-3 sm:mb-6">Compara2r</h1></strong>
 
-    <div id="comp-display-row" class="flex flex-wrap lg:flex-row justify-center justify-items-center items-stretch h-full mx-[15%] lg:space-x-6 space-y-5 lg:space-y-0 text-2xl text-zinc-700 break-words">
-        <!-- TODO make this look better on mobile -->
-        <div id="comp-display-1" onclick="sendFeedback(1, false)" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl 
+    <div id="comp-display-row" class="grid grid-cols-1 lg:flex lg:flex-row justify-center justify-items-center items-stretch h-full mx-2 lg:mx-0 lg:space-x-6 space-y-5 lg:space-y-0 text-xl sm:text-2xl text-zinc-700 break-words">
+        <div id="comp-display-1" onclick="sendFeedback(1, false)" class="flex-none lg:basis-1/2 w-full max-w-md lg:min-w-[448px] h-56 sm:h-72 p-6 rounded-2xl 
          border-[#855177] grayed-out:border-slate-700 border-b-4 active:grayed-out:border-b-4 active:border-b-2 shadow-md 
          bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400 
          text-left overflow-x-hidden overflow-y-auto cursor-pointer grayed-out:cursor-default transition">
@@ -24,7 +23,7 @@
             <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
             <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-copy" onclick="navigator.clipboard.writeText(text1)">Copy</button>
         </div>
-        <div id="comp-display-2" onclick="sendFeedback(2, false)" class="flex-none lg:basis-1/2 max-w-md min-w-full lg:min-w-[448px] h-72 p-6 rounded-2xl 
+        <div id="comp-display-2" onclick="sendFeedback(2, false)" class="flex-none lg:basis-1/2 w-full max-w-md lg:min-w-[448px] h-56 sm:h-72 p-6 rounded-2xl 
         border-[#855177] grayed-out:border-slate-700 border-b-4 active:grayed-out:border-b-4 active:border-b-2 shadow-md 
         bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400 
         text-left overflow-x-hidden overflow-y-auto cursor-pointer grayed-out:cursor-default transition">
@@ -36,16 +35,6 @@
 
     <br>
 
-    <table class="mx-auto">
-        <tr id="comp-feedback">
-            <td class="w-[500px] inline-block" id="comp-feedback-1">
-                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
-            </td>
-            <td class="w-[500px] inline-block" id="comp-feedback-2">
-                <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-flag" onclick="sendFeedback(2, true)">Flag</button>
-            </td>
-        </tr>
-    </table>
     <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="skip" onclick="getComparison()">Skip</button>
 
     <script>
