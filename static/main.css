@@ -468,17 +468,26 @@ Ensure the default browser behavior of the `hidden` attribute.
   --tw-backdrop-sepia:  ;
 }
 
+.m-0 {
+  margin: 0px;
+}
+
 .mx-2 {
   margin-left: 0.5rem;
   margin-right: 0.5rem;
+}
+
+.mx-1 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
 }
 
 .mb-3 {
   margin-bottom: 0.75rem;
 }
 
-.flex {
-  display: flex;
+.table {
+  display: table;
 }
 
 .grid {
@@ -489,8 +498,24 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 100%;
 }
 
-.h-56 {
-  height: 14rem;
+.h-64 {
+  height: 16rem;
+}
+
+.h-\[calc\(100\%-60px\)\] {
+  height: calc(100% - 60px);
+}
+
+.h-\[60px\] {
+  height: 60px;
+}
+
+.max-h-\[calc\(100\%-60px\)\] {
+  max-height: calc(100% - 60px);
+}
+
+.max-h-full {
+  max-height: 100%;
 }
 
 .w-full {
@@ -503,6 +528,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .flex-none {
   flex: none;
+}
+
+.border-collapse {
+  border-collapse: collapse;
 }
 
 .cursor-pointer {
@@ -575,8 +604,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(255 164 198 / var(--tw-bg-opacity));
 }
 
+.bg-transparent {
+  background-color: transparent;
+}
+
 .p-6 {
   padding: 1.5rem;
+}
+
+.p-0 {
+  padding: 0px;
 }
 
 .p-3 {
@@ -638,13 +675,27 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(255 179 207 / var(--tw-bg-opacity));
 }
 
+.hover\:bg-zinc-50:hover {
+  --tw-bg-opacity: 1;
+  background-color: rgb(250 250 250 / var(--tw-bg-opacity));
+}
+
 .active\:border-b-2:active {
   border-bottom-width: 2px;
+}
+
+.active\:bg-white:active {
+  --tw-bg-opacity: 1;
+  background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
 .disabled\:border-zinc-600:disabled {
   --tw-border-opacity: 1;
   border-color: rgb(82 82 91 / var(--tw-border-opacity));
+}
+
+.hover\:disabled\:bg-transparent:disabled:hover {
+  background-color: transparent;
 }
 
 .grayed-out {
@@ -669,8 +720,8 @@ Ensure the default browser behavior of the `hidden` attribute.
     margin-bottom: 1.5rem;
   }
 
-  .sm\:h-72 {
-    height: 18rem;
+  .sm\:h-80 {
+    height: 20rem;
   }
 
   .sm\:text-5xl {

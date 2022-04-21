@@ -11,25 +11,44 @@
 <body onload="getComparison()" class="text-center text-[#355663] bg-[#a4dcff]">
     <strong><h1 class="text-3xl sm:text-5xl mb-3 sm:mb-6">Compara2r</h1></strong>
 
-    <div id="comp-display-row" class="grid grid-cols-1 lg:flex lg:flex-row justify-center justify-items-center items-stretch h-full mx-2 lg:mx-0 lg:space-x-6 space-y-5 lg:space-y-0 text-xl sm:text-2xl text-zinc-700 break-words">
-        <div id="comp-display-1" onclick="sendFeedback(1, false)" class="flex-none lg:basis-1/2 w-full max-w-md lg:min-w-[448px] h-56 sm:h-72 p-6 rounded-2xl 
-         border-[#855177] grayed-out:border-slate-700 border-b-4 active:grayed-out:border-b-4 active:border-b-2 shadow-md 
-         bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400 
-         text-left overflow-x-hidden overflow-y-auto cursor-pointer grayed-out:cursor-default transition">
-            <p id="comp-display-1-text" class="font-semibold"></p>
-            <!-- TODO if you press the flag or copy buttons it presses the div and casts a vote -->
-            <!-- TODO If these buttons are inside the flex boxes, the text should scroll above it and the buttons should stay in place
-                 i.e it shouldn't be like theres a scoll pane and you have to scroll down to see the flag and copy buttons -->
-            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-flag" onclick="sendFeedback(1, true)">Flag</button>
-            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="1-copy" onclick="navigator.clipboard.writeText(text1)">Copy</button>
-        </div>
-        <div id="comp-display-2" onclick="sendFeedback(2, false)" class="flex-none lg:basis-1/2 w-full max-w-md lg:min-w-[448px] h-56 sm:h-72 p-6 rounded-2xl 
+    <div id="comp-display-row" class="grid grid-cols-1 lg:flex lg:flex-row justify-center justify-items-center items-stretch h-full mx-2 lg:mx-0 lg:space-x-6 space-y-5 lg:space-y-0 text-xl sm:text-2xl">
+        
+        <div id="comp-display-1" onclick="sendFeedback(1, false)" class="flex-none lg:basis-1/2 w-full max-w-md lg:min-w-[448px] h-64 sm:h-80 rounded-2xl 
         border-[#855177] grayed-out:border-slate-700 border-b-4 active:grayed-out:border-b-4 active:border-b-2 shadow-md 
-        bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400 
-        text-left overflow-x-hidden overflow-y-auto cursor-pointer grayed-out:cursor-default transition">
-            <p id="comp-display-2-text" class="font-semibold"></p>
-            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-flag" onclick="sendFeedback(2, true)">Flag</button>
-            <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="2-copy" onclick="navigator.clipboard.writeText(text2)">Copy</button>
+        bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400
+        text-left cursor-pointer grayed-out:cursor-default transition">
+
+            <div class="p-6 h-[calc(100%-60px)] max-h-[calc(100%-60px)] overflow-x-hidden overflow-y-auto">
+                <p class="p-0 m-0 max-h-full break-words font-semibold text-zinc-700 text-transparent transition" id="comp-display-1-text"></p>
+            </div>
+            
+            <div class="mx-1 p-0 h-[60px]">
+                <table class="border-collapse"><tr>
+                        <td><button class="bg-transparent hover:bg-zinc-50 active:bg-white hover:disabled:bg-transparent p-3 rounded-2xl transition" id="1-flag" onclick="sendFeedback(1, true)" title="Flag">&#x1F6A9;</button></td>
+                        <td class="w-full"></td>
+                        <td><button class="bg-transparent hover:bg-zinc-50 active:bg-white p-3 rounded-2xl transition" id="1-copy" onclick="copy(1)" title="Copy">&#x1F4CB;</button></td>
+                    </tr></table>
+            </div>
+        
+        </div>
+
+        <div id="comp-display-2" onclick="sendFeedback(2, false)" class="flex-none lg:basis-1/2 w-full max-w-md lg:min-w-[448px] h-64 sm:h-80 rounded-2xl 
+        border-[#855177] grayed-out:border-slate-700 border-b-4 active:grayed-out:border-b-4 active:border-b-2 shadow-md 
+        bg-[#ffa4c6] hover:bg-[#ffb3cf] grayed-out:bg-slate-400 hover:grayed-out:bg-slate-400
+        text-left cursor-pointer grayed-out:cursor-default transition">
+
+            <div class="p-6 h-[calc(100%-60px)] max-h-[calc(100%-60px)] overflow-x-hidden overflow-y-auto">
+                <p class="p-0 m-0 max-h-full break-words font-semibold text-zinc-700 text-transparent transition" id="comp-display-2-text"></p>
+            </div>
+            
+            <div class="mx-1 p-0 h-[60px]">
+                <table class="border-collapse"><tr>
+                        <td><button class="bg-transparent hover:bg-zinc-50 active:bg-white hover:disabled:bg-transparent p-3 rounded-2xl transition" id="2-flag" onclick="sendFeedback(2, true)" title="Flag">&#x1F6A9;</button></td>
+                        <td class="w-full"></td>
+                        <td><button class="bg-transparent hover:bg-zinc-50 active:bg-white p-3 rounded-2xl transition" id="2-copy" onclick="copy(2)" title="Copy">&#x1F4CB;</button></td>
+                    </tr></table>
+            </div>
+        
         </div>
     </div>
 
@@ -42,6 +61,7 @@
         let text2 = ""
         let line1 = ""
         let line2 = ""
+        let beingCopied = false
 
         // An actual HTML "disabled" means that you cannot click and cast a vote
         // Everything else is just for aesthetic purposes
@@ -60,14 +80,12 @@
                 document.getElementById("comp-display-2-text").innerText = data.text2
 
                 document.getElementById("comp-display-1").classList.remove("grayed-out")
-                document.getElementById("comp-display-1").classList.remove("text-transparent")
+                document.getElementById("comp-display-1-text").classList.remove("text-transparent")
                 document.getElementById("comp-display-1").disabled = false
-        
                 document.getElementById("1-flag").disabled = false
-                
 
                 document.getElementById("comp-display-2").classList.remove("grayed-out")
-                document.getElementById("comp-display-2").classList.remove("text-transparent")
+                document.getElementById("comp-display-2-text").classList.remove("text-transparent")
                 document.getElementById("comp-display-2").disabled = false
                 document.getElementById("2-flag").disabled = false
             })
@@ -108,9 +126,10 @@
             }
             else
             {
-                // Don't do anything if you click on it and it's disabled
+                // Don't do anything if you click on it and it's disabled or something's being copied
                 if ((whichOne == 1 && document.getElementById("comp-display-1").disabled) ||
-                    (whichOne == 2 && document.getElementById("comp-display-2").disabled))
+                    (whichOne == 2 && document.getElementById("comp-display-2").disabled) ||
+                    beingCopied)
                 {
                     return
                 }
@@ -133,8 +152,8 @@
             .then((data) => {
                 if (!isFlag)
                 {
-                    document.getElementById("comp-display-1").classList.add("text-transparent")
-                    document.getElementById("comp-display-2").classList.add("text-transparent")
+                    document.getElementById("comp-display-1-text").classList.add("text-transparent")
+                    document.getElementById("comp-display-2-text").classList.add("text-transparent")
 
                     document.getElementById("comp-display-1").disabled = true
                     document.getElementById("comp-display-1").disabled = true
@@ -147,6 +166,23 @@
             .catch((error) => {
                 console.error(error)
             })
+        }
+
+        function copy (whichOne)
+        {
+            beingCopied = true
+            setTimeout(() => {
+                beingCopied = false
+            }, 50)
+
+            if (whichOne == 1)
+            {
+                navigator.clipboard.writeText(text1)
+            }
+            else
+            {
+                navigator.clipboard.writeText(text2)
+            }
         }
         </script>
 </body>
