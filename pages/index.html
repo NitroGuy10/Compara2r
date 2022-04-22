@@ -9,7 +9,7 @@
     <link href="./static/main.css" rel="stylesheet">
 </head>
 <body onload="getComparison()" class="text-center text-[#355663] bg-[#a4dcff]">
-    <strong><h1 class="text-3xl sm:text-5xl mb-3 sm:mb-6">Compara2r</h1></strong>
+    <strong><h1 class="text-5xl mb-3 sm:mb-6">Compara2r</h1></strong>
 
     <div id="comp-display-row" class="grid grid-cols-1 lg:flex lg:flex-row justify-center justify-items-center items-stretch h-full mx-2 lg:mx-0 lg:space-x-6 space-y-5 lg:space-y-0 text-xl sm:text-2xl">
         
@@ -54,7 +54,7 @@
 
     <br>
 
-    <button class="p-3 border-2 border-zinc-300 disabled:border-zinc-600" id="skip" onclick="getComparison()">Skip</button>
+    <button class="p-3 text-4xl underline" id="skip" onclick="getComparison()"><strong>Skip</strong></button>
 
     <script>
         let text1 = ""
@@ -68,30 +68,39 @@
 
         function getComparison ()
         {
-            fetch("/comparison")
-            .then((response) => response.json())
-            .then((data) => {
-                text1 = data.text1
-                text2 = data.text2
-                line1 = data.line1
-                line2 = data.line2
+            document.getElementById("comp-display-1-text").classList.add("text-transparent")
+            document.getElementById("comp-display-2-text").classList.add("text-transparent")
+            document.getElementById("comp-display-1").disabled = true
+            document.getElementById("comp-display-2").disabled = true
+            document.getElementById("1-flag").disabled = true
+            document.getElementById("2-flag").disabled = true
 
-                document.getElementById("comp-display-1-text").innerText = data.text1
-                document.getElementById("comp-display-2-text").innerText = data.text2
+            setTimeout(() => {
+                fetch("/comparison")
+                .then((response) => response.json())
+                .then((data) => {
+                    text1 = data.text1
+                    text2 = data.text2
+                    line1 = data.line1
+                    line2 = data.line2
 
-                document.getElementById("comp-display-1").classList.remove("grayed-out")
-                document.getElementById("comp-display-1-text").classList.remove("text-transparent")
-                document.getElementById("comp-display-1").disabled = false
-                document.getElementById("1-flag").disabled = false
+                    document.getElementById("comp-display-1-text").innerText = data.text1
+                    document.getElementById("comp-display-2-text").innerText = data.text2
 
-                document.getElementById("comp-display-2").classList.remove("grayed-out")
-                document.getElementById("comp-display-2-text").classList.remove("text-transparent")
-                document.getElementById("comp-display-2").disabled = false
-                document.getElementById("2-flag").disabled = false
-            })
-            .catch((error) => {
-                console.error(error)
-            })
+                    document.getElementById("comp-display-1").classList.remove("grayed-out")
+                    document.getElementById("comp-display-1-text").classList.remove("text-transparent")
+                    document.getElementById("comp-display-1").disabled = false
+                    document.getElementById("1-flag").disabled = false
+
+                    document.getElementById("comp-display-2").classList.remove("grayed-out")
+                    document.getElementById("comp-display-2-text").classList.remove("text-transparent")
+                    document.getElementById("comp-display-2").disabled = false
+                    document.getElementById("2-flag").disabled = false
+                })
+                .catch((error) => {
+                    console.error(error)
+                })
+            }, 100)
         }
 
         function sendFeedback (whichOne, isFlag)
@@ -152,14 +161,6 @@
             .then((data) => {
                 if (!isFlag)
                 {
-                    document.getElementById("comp-display-1-text").classList.add("text-transparent")
-                    document.getElementById("comp-display-2-text").classList.add("text-transparent")
-
-                    document.getElementById("comp-display-1").disabled = true
-                    document.getElementById("comp-display-1").disabled = true
-                    document.getElementById("1-flag").disabled = true
-                    document.getElementById("2-flag").disabled = true
-
                     getComparison()
                 }  
             })
