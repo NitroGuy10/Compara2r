@@ -1,52 +1,36 @@
 module.exports = {
     getLine,
-    getNumLines
+    getNumLines,
+    getFileName
 }
 
 const fs = require("fs")
-const readline = require("readline")
 
-const fileName = "/dataset/data.txt"
+const fileName = "/dataset/dataset.json"
 
-let numLines
-findNumLines()
+let dataset
 
-function findNumLines ()
-{
-    let interface = readline.createInterface({
-        input: fs.createReadStream(__dirname + fileName)
-    })
 
-    numLines = 0
-
-    interface.on("line", (line) => {
-        if (line !== "")
-        {
-            numLines++
-        }
-    })    
-}
+fs.readFile(__dirname + fileName, "utf-8" , (error, data) => {
+    if (error)
+    {
+      console.error(error)
+      return
+    }
+    dataset = JSON.parse(data)
+  })
 
 function getNumLines ()
 {
-    return numLines
+    return dataset.length
 }
 
-function getLine (lineNumber, callback)
+function getFileName ()
 {
-    // Lines should be JSON strings (surrounded by quotation marks with necessary characters escaped)
-    let interface = readline.createInterface({
-        input: fs.createReadStream(__dirname + fileName)
-    })
+    return fileName
+}
 
-    let linesElapsed = 0
-
-    interface.on("line", (line) => {
-        linesElapsed++
-        if (linesElapsed == lineNumber)
-        {
-            callback(JSON.parse(line))
-            interface.close()
-        }
-    })
+function getLine (lineNumber)
+{
+    return dataset[lineNumber]["__compara2r_item"]
 }

@@ -11,7 +11,8 @@
 module.exports = {
     vote,
     storePrompt,
-    makeHash
+    makeHash,
+    exportJSON
 }
 
 const { Pool } = require("pg")
@@ -103,6 +104,17 @@ function storePrompt (ipAddress, prompt)
         {
             createUser([ipAddress, false, [], [], [], prompt, []])
         }
+    })
+}
+
+function exportJSON (callback)
+{
+    pool.query("SELECT * from compara2r_users;", (error, response) => {
+        if (error)
+        {
+            console.error(error.stack)
+        }
+        callback(response.rows)
     })
 }
 

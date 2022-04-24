@@ -27,19 +27,16 @@ app.get("/comparison", (request, response) => {
     }
     while (line2 == line1)
 
-    dataset.getLine(line1, (text1) => {
-        dataset.getLine(line2, (text2) => {
-            const comparison = {
-                line1: line1,
-                text1: text1,
-                line2: line2,
-                text2: text2
-            }
-            
-            db.storePrompt(db.makeHash(request.ip), [line1, line2])
-            response.send(comparison)
-        })
-    })
+    const comparison = {
+        line1: line1,
+        text1: dataset.getLine(line1),
+        line2: line2,
+        text2: dataset.getLine(line2)
+    }
+    
+    db.storePrompt(db.makeHash(request.ip), [line1, line2])
+    response.send(comparison)
+
 })
 
 app.post("/comparison", (request, response) => {
@@ -56,28 +53,15 @@ app.post("/comparison", (request, response) => {
 })
 
 app.get("/results/" + process.env.ADMIN_PASSWORD, (request, response) => {
-    // TODO send csv file of results
-    // but only if you can guess the super long secret password
-    // each item in dataset with percent of matchups won, how many votes, how many flags, how many passups, who voted for it (and how many times), who flagged it, who passed up on it (and how many times),
-    // sorted by percent of matchups won
-    // exclude data from blacklisted users
-    response.send("<p>results!</p>")
-})
-
-app.get("/users/" + process.env.ADMIN_PASSWORD, (request, response) => {
-    // TODO send csv file of users
-    // but only if you can guess the super long secret password
-    // each user that ever submitted anything with how many things they voted for, how many things they flagged, how many things they passed up on, what they voted for (and how many times), what they flagged, what they passed up on (and how many times),
-    // sorted by number of votes
-    // exclude data from blacklisted users
-    response.send("<p>users!</p>")
+    db.exportJSON((rows) => {
+        response.attachment()
+        response.type("json")
+        response.send(JSON.stringify(rows))
+    })
 })
 
 app.get("/dataset/" + process.env.ADMIN_PASSWORD, (request, response) => {
-    // TODO send csv file of dataset
-    // but only if you can guess the super long secret password
-    // the decimal line number, the item itself
-    response.send("<p>dataset!</p>")
+    response.download(__dirname + dataset.getFileName())
 })
 
 app.listen(port, () => {
