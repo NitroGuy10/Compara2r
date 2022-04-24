@@ -19,32 +19,32 @@ app.get("/", (request, response) => {
 })
 
 app.get("/comparison", (request, response) => {
-    const line1 = Math.floor(Math.random() * (dataset.getNumLines())) + 1
-    let line2
+    const itemNum1 = Math.floor(Math.random() * (dataset.getNumItems())) + 1
+    let itemNum2
     do
     {
-        line2 = Math.floor(Math.random() * (dataset.getNumLines())) + 1
+        itemNum2 = Math.floor(Math.random() * (dataset.getNumItems())) + 1
     }
-    while (line2 == line1)
+    while (itemNum2 == itemNum1)
 
     const comparison = {
-        line1: line1,
-        text1: dataset.getLine(line1),
-        line2: line2,
-        text2: dataset.getLine(line2)
+        itemNum1: itemNum1,
+        text1: dataset.getItem(itemNum1),
+        itemNum2: itemNum2,
+        text2: dataset.getItem(itemNum2)
     }
     
-    db.storePrompt(db.makeHash(request.ip), [line1, line2])
+    db.storePrompt(db.makeHash(request.ip), [itemNum1, itemNum2])
     response.send(comparison)
 
 })
 
 app.post("/comparison", (request, response) => {
-    if (request.body.voteLine && typeof request.body.voteLine === "number" &&
-        request.body.passUpLine && typeof request.body.passUpLine === "number" &&
+    if (request.body.voteItemNum && typeof request.body.voteItemNum === "number" &&
+        request.body.passUpItemNum && typeof request.body.passUpItemNum === "number" &&
         request.body.isFlag != undefined && typeof request.body.isFlag === "boolean" &&
-        request.body.voteLine > 0 && request.body.voteLine <= dataset.getNumLines() &&
-        request.body.passUpLine > 0 && request.body.passUpLine <= dataset.getNumLines())
+        request.body.voteItemNum > 0 && request.body.voteItemNum <= dataset.getNumItems() &&
+        request.body.passUpItemNum > 0 && request.body.passUpItemNum <= dataset.getNumItems())
     {
         db.vote(db.makeHash(request.ip), request.body)
     }

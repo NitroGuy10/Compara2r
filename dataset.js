@@ -1,6 +1,6 @@
 module.exports = {
-    getLine,
-    getNumLines,
+    getItem,
+    getNumItems,
     getFileName
 }
 
@@ -20,7 +20,7 @@ fs.readFile(__dirname + fileName, "utf-8" , (error, data) => {
     dataset = JSON.parse(data)
   })
 
-function getNumLines ()
+function getNumItems ()
 {
     return dataset.length
 }
@@ -30,7 +30,7 @@ function getFileName ()
     return fileName
 }
 
-function getLine (lineNumber)
+function getItem (itemNum)
 {
-    return dataset[lineNumber]["__compara2r_item"]
+    return dataset[itemNum]["__compara2r_item"]
 }

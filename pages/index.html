@@ -59,8 +59,8 @@
     <script>
         let text1 = ""
         let text2 = ""
-        let line1 = ""
-        let line2 = ""
+        let itemNum1 = ""
+        let itemNum2 = ""
         let beingCopied = false
 
         // An actual HTML "disabled" means that you cannot click and cast a vote
@@ -81,8 +81,8 @@
                 .then((data) => {
                     text1 = data.text1
                     text2 = data.text2
-                    line1 = data.line1
-                    line2 = data.line2
+                    itemNum1 = data.itemNum1
+                    itemNum2 = data.itemNum2
 
                     document.getElementById("comp-display-1-text").innerText = data.text1
                     document.getElementById("comp-display-2-text").innerText = data.text2
@@ -105,17 +105,17 @@
 
         function sendFeedback (whichOne, isFlag)
         {
-            let line
-            let passUpLine
+            let itemNum
+            let passUpItemNum
             if (whichOne == 1)
             {
-                line = line1
-                passUpLine = line2
+                itemNum = itemNum1
+                passUpItemNum = itemNum2
             }
             else
             {
-                line = line2
-                passUpLine = line1
+                itemNum = itemNum2
+                passUpItemNum = itemNum1
             }
 
             if (isFlag)
@@ -145,8 +145,8 @@
             }
 
             const feedback = {
-                voteLine: line,
-                passUpLine: passUpLine,
+                voteItemNum: itemNum,
+                passUpItemNum: passUpItemNum,
                 isFlag: isFlag
             }
 

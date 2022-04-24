@@ -2,11 +2,11 @@
 
 // ip hash (for deleting bad actors),
 // is blacklisted,
-// votes (line numbers of things the user voted as better)
-// pass ups (line numbers of things the user passed up on)
-// flags (line numbers of things the user flagged)
-// latest prompt (two line numbers that were sent to the user in their last comparison GET)
-// latest vote (two line numbers that were voted upon by the user in their last comparison POST)
+// votes (item numbers of things the user voted as better)
+// pass ups (item numbers of things the user passed up on)
+// flags (item numbers of things the user flagged)
+// latest prompt (two item numbers that were sent to the user in their last comparison GET)
+// latest vote (two item numbers that were voted upon by the user in their last comparison POST)
 
 module.exports = {
     vote,
@@ -50,14 +50,14 @@ function vote (ipAddress, data)
                 }
                 else
                 {
-                    if ((user.latest_prompt[0] == data.voteLine && user.latest_prompt[1] == data.passUpLine ||
-                         user.latest_prompt[1] == data.voteLine && user.latest_prompt[0] == data.passUpLine))  // <--- i.e. the vote the user is casting matches the latest prompt they were given
+                    if ((user.latest_prompt[0] == data.voteItemNum && user.latest_prompt[1] == data.passUpItemNum ||
+                         user.latest_prompt[1] == data.voteItemNum && user.latest_prompt[0] == data.passUpItemNum))  // <--- i.e. the vote the user is casting matches the latest prompt they were given
                     {
                         if (data.isFlag)  // Flagging doesn't require the user to have not voted on their current prompt (since 1. they can flag both items and 2. multiple flags for the same item are treated as one flag)
                         {
                             // TODO multiple flags for the same item should treated as one flag when data is analyzed
                             const newFlagIndex = user.flags.length + 1
-                            pool.query("UPDATE compara2r_users SET flags["+ newFlagIndex +"]=$1, latest_vote=$2 WHERE ip_hash=$3;", [data.voteLine, user.latest_prompt, ipAddress], (error, response) => {
+                            pool.query("UPDATE compara2r_users SET flags["+ newFlagIndex +"]=$1, latest_vote=$2 WHERE ip_hash=$3;", [data.voteItemNum, user.latest_prompt, ipAddress], (error, response) => {
                                 if (error) { console.error(error.stack) }
                             })
                         }
@@ -66,7 +66,7 @@ function vote (ipAddress, data)
                         {
                             // Actually cast the vote
                             const newElementIndex = user.votes.length + 1
-                            pool.query("UPDATE compara2r_users SET votes["+ newElementIndex +"]=$1, passups["+ newElementIndex +"]=$2, latest_vote=$3 WHERE ip_hash=$4;", [data.voteLine, data.passUpLine, user.latest_prompt, ipAddress], (error, response) => {
+                            pool.query("UPDATE compara2r_users SET votes["+ newElementIndex +"]=$1, passups["+ newElementIndex +"]=$2, latest_vote=$3 WHERE ip_hash=$4;", [data.voteItemNum, data.passUpItemNum, user.latest_prompt, ipAddress], (error, response) => {
                                 if (error) { console.error(error.stack) }
                             })
                         }
