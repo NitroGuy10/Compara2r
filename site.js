@@ -52,7 +52,7 @@ app.post("/comparison", (request, response) => {
     response.send({ })
 })
 
-app.get("/results/" + process.env.ADMIN_PASSWORD, (request, response) => {
+app.get("/votes/" + process.env.ADMIN_PASSWORD, (request, response) => {
     db.exportJSON((rows) => {
         response.attachment()
         response.type("json")

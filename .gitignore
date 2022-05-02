@@ -106,3 +106,8 @@ dist
 
 # Me :)
 dataset/
+results_viewing/dataset.json
+results_viewing/votes.json
+results_viewing/results.json
+results_viewing/results.csv
+results_viewing/results.html
