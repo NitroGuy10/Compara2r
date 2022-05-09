@@ -19,11 +19,11 @@ app.get("/", (request, response) => {
 })
 
 app.get("/comparison", (request, response) => {
-    const itemNum1 = Math.floor(Math.random() * (dataset.getNumItems())) + 1
+    const itemNum1 = Math.floor(Math.random() * (dataset.getNumItems()))
     let itemNum2
     do
     {
-        itemNum2 = Math.floor(Math.random() * (dataset.getNumItems())) + 1
+        itemNum2 = Math.floor(Math.random() * (dataset.getNumItems()))
     }
     while (itemNum2 == itemNum1)
 
@@ -62,6 +62,12 @@ app.get("/votes/" + process.env.ADMIN_PASSWORD, (request, response) => {
 
 app.get("/dataset/" + process.env.ADMIN_PASSWORD, (request, response) => {
     response.download(__dirname + dataset.getFileName())
+})
+
+app.get("/blacklist/:ip_hash/" + process.env.ADMIN_PASSWORD, (request, response) => {
+    db.blacklist(request.params["ip_hash"], (success) => {
+        response.send("<p>Success: " + success + "</p>")
+    })
 })
 
 app.listen(port, () => {

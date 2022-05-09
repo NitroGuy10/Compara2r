@@ -12,7 +12,8 @@ module.exports = {
     vote,
     storePrompt,
     makeHash,
-    exportJSON
+    exportJSON,
+    blacklist
 }
 
 const { Pool } = require("pg")
@@ -24,14 +25,13 @@ const pool = new Pool({
 })
 
 const { createHash } = require("crypto")
-const { contentDisposition } = require("express/lib/utils")
 
 function vote (ipAddress, data)
 {
     // A user can vote for something more than once
     // A user CANNOT flag something more than once
 
-    getUser(ipAddress, (user) => {
+    getUser(ipAddress, (user, isBlacklisted) => {
         if (user == null)
         {
             // The server could get to this point for two reasons
@@ -41,7 +41,7 @@ function vote (ipAddress, data)
         }
         else
         {
-            if (!user.blacklisted)
+            if (!isBlacklisted)
             {
                 if (user.votes.length != user.passups.length)  // I don't even think this should be possible
                 {
@@ -55,7 +55,6 @@ function vote (ipAddress, data)
                     {
                         if (data.isFlag)  // Flagging doesn't require the user to have not voted on their current prompt (since 1. they can flag both items and 2. multiple flags for the same item are treated as one flag)
                         {
-                            // TODO multiple flags for the same item should treated as one flag when data is analyzed
                             const newFlagIndex = user.flags.length + 1
                             pool.query("UPDATE compara2r_users SET flags["+ newFlagIndex +"]=$1, latest_vote=$2 WHERE ip_hash=$3;", [data.voteItemNum, user.latest_prompt, ipAddress], (error, response) => {
                                 if (error) { console.error(error.stack) }
@@ -122,21 +121,35 @@ function exportJSON (callback)
 
 function blacklist (ipAddress, callback)
 {
-    // Creates a dummy user entry that is blacklisted
-    // If the user doesn't exist yet (i.e. they happen to become blacklisted before their comparison GET), then everything's fine
-    // If the user does exist, the dummy user entry will be detected when the user tries to do anything and the server will attempt to compact the user and any blacklist-dummies into one row (their data will be deleted as an added bonus (or side effect))
-    // Of course, this creates the possibility that a user could become blacklisted, never make a request again, and the dummy user persists
-    // TODO As such, I would need to account for this when exporting the database, most likely by checking each ip_hash in the table to ensure it only occurs once
+    // Creates a dummy user entry with the same ip address that is blacklisted
+    // If the user now tries to do anything, the dummy user entry will be detected and their action will be ignored
     console.log("user " + ipAddress + " blacklisted")
-    createUser([ipAddress, true, [], [], [], [], []])
+    createUser([ipAddress, true, [], [], [], [], []], (response, success) => {
+        callback(success)
+    })
 }
 
 function createUser (values, callback)
 {
-    userExists(values[0], (exists) => {
-        if (exists)
+    userExists(values[0], (exists, isBlacklisted) => {
+        let success = true
+        if (exists && isBlacklisted)
+        {
+            console.warn("user " + values[0] + " already exists! they're even blacklisted! why are you trying to create them?")
+            if (callback)
+            {
+                success = false
+                callback(null, success)
+            }
+        }
+        else if (exists && values[1] == false)  // If the user exists and the new user is not supposed to be blacklisted
         {
             console.warn("user " + values[0] + " already exists! why are you trying to create them?")
+            if (callback)
+            {
+                success = false
+                callback(null, success)
+            }
         }
         else
         {
@@ -144,10 +157,11 @@ function createUser (values, callback)
                 if (error)
                 {
                     console.error(error.stack)
+                    success = false
                 }
                 if (callback)
                 {
-                    callback(response)
+                    callback(response, success)
                 }
             })
         }
@@ -156,6 +170,7 @@ function createUser (values, callback)
 
 function getUser (ipAddress, callback)
 {
+    let isBlacklisted = false
     pool.query("SELECT * FROM compara2r_users WHERE ip_hash=$1;", [ipAddress], (error, response) => {
         if (error)
         {
@@ -163,14 +178,13 @@ function getUser (ipAddress, callback)
         }
         if (response.rows.length === 0)
         {
-            callback(null)
+            callback(null, isBlacklisted)
         }
         else
         {
             if (response.rows.length > 1)
             {
                 // See if one of the duplicate rows is blacklisted
-                let isBlacklisted = false
                 for (let row of response.rows)
                 {
                     if (row.blacklisted)
@@ -180,40 +194,34 @@ function getUser (ipAddress, callback)
                     }
                 }
 
-                if (isBlacklisted)
+                if (!isBlacklisted)
                 {
-                    // Compact any blacklist-dummies into one blacklisted user
+                    console.warn("user " + ipAddress + " appeared more than once in the database... all of their entries will be deleted")
                     pool.query("DELETE FROM compara2r_users WHERE ip_hash=$1", [ipAddress], (error, response) => {
                         if (error)
                         {
                             console.error(error.stack)
+                            callback(null, isBlacklisted)
+                            return
                         }
-                        blacklist(ipAddress)
                     })
                 }
-                else
-                {
-                    console.error("user " + ipAddress + " appears more than once in the database!")
-                }
             }
-            callback(response.rows[0])
+            callback(response.rows[0], isBlacklisted)
         } 
     })
 }
 
 function userExists (ipAddress, callback)
 {
-    getUser(ipAddress, (user) => {
-        callback(user != null)
+    getUser(ipAddress, (user, isBlacklisted) => {
+        callback(user != null, isBlacklisted)
     })
 }
 
 function makeHash (string)
 {
-    /*
-    const hash = createHash("sha256")
-    hash.update(string)
-    return hash.digest("hex")
-    */
-   return string
+    // I do not believe it is necessary to hash users' ip addresses
+    // There is no personally identifiable information stored in association with them
+    return string
 }
