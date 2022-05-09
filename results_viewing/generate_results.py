@@ -14,11 +14,14 @@ def initialize_item(items_dict, dataset_list, item_num):
     if item_num < len(dataset_list):
         items_dict[item_num] = {
             "item_num": item_num,
-            "item_contents": json.dumps(dataset_list[item_num]),
+            "item_contents": json.dumps(dataset_list[item_num]["__compara2r_item"]),
+            "item_object": json.dumps(dataset_list[item_num]),
             "num_votes": 0,
-            "num_passups": 0,
             "voters": {},
-            "passup-ers": {}
+            "num_passups": 0,
+            "passup-ers": {},
+            "num_flags": 0,
+            "flag-ers": set()
         }
         return True
     else:
@@ -32,8 +35,8 @@ elif not isfile(DATASET_FILENAME):
     print("Dataset JSON file not found. You can get it <your_compara2r_site>/dataset/<ADMIN_PASSWORD>. Then move it to this folder and rename it \"{}\".".format(DATASET_FILENAME))
 else:
 
-    with open(VOTES_FILENAME, "r") as votes_file:
-        with open(DATASET_FILENAME, "r") as dataset_file:
+    with open(VOTES_FILENAME, "r", encoding="utf-8") as votes_file:
+        with open(DATASET_FILENAME, "r", encoding="utf-8") as dataset_file:
             votes = json.load(votes_file)
             dataset = json.load(dataset_file)
 
@@ -47,6 +50,7 @@ else:
 
                 # Count votes
                 for vote_item_num in user["votes"]:
+                    # Initialize the item if it does not already exist
                     if vote_item_num not in items and not initialize_item(items, dataset, vote_item_num):
                         continue
 
@@ -67,9 +71,19 @@ else:
                     else:
                         items[passup_item_num]["passup-ers"][user["ip_hash"]] = 1
                 
-                # TODO flags (remember to only count them once per user)
-                    
+                # Count flags
+                for flag_item_num in user["flags"]:
+                    if flag_item_num not in items and not initialize_item(items, dataset, flag_item_num):
+                        continue
+
+                    if user["ip_hash"] not in items[flag_item_num]["flag-ers"]:
+                        items[flag_item_num]["flag-ers"].add(user["ip_hash"])
+                        items[flag_item_num]["num_flags"] += 1
             
+
+            # Some changes to the data structure after reading in everything
+            for item_num in items:
+                items[item_num]["flag-ers"] = list(items[item_num]["flag-ers"])
 
             # Honestly not really sure the best way to rank items
             sorted_items = sorted(items.values(), reverse=True, key=lambda item: item["num_votes"] - item["num_passups"])
@@ -79,14 +93,12 @@ else:
             if len(items) == 0:
                 print("No items could be found!")
             else:
-                # TODO mark if an item has a lot of flags
-
-                with open(RESULTS_JSON_FILENAME, "w") as results_json_file:
-                    json.dump(items, results_json_file)
+                with open(RESULTS_JSON_FILENAME, "w", encoding="utf-8") as results_json_file:
+                    json.dump(sorted_items, results_json_file)
 
                     print("Output", RESULTS_JSON_FILENAME)
             
-                with open(RESULTS_CSV_FILENAME, "w") as results_csv_file:
+                with open(RESULTS_CSV_FILENAME, "w", newline="", encoding="utf-8") as results_csv_file:
                     writer = csv.DictWriter(results_csv_file, fieldnames=sorted_items[0].keys())
 
                     writer.writeheader()
