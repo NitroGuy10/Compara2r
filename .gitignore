@@ -105,7 +105,10 @@ dist
 
 
 # Me :)
+
 dataset/
+dataset/dataset_getting/
+
 results_viewing/dataset.json
 results_viewing/votes.json
 results_viewing/results.json
