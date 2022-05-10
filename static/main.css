@@ -502,16 +502,16 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 16rem;
 }
 
-.h-\[calc\(100\%-60px\)\] {
-  height: calc(100% - 60px);
+.h-\[calc\(100\%-3\.8rem\)\] {
+  height: calc(100% - 3.8rem);
 }
 
-.h-\[60px\] {
-  height: 60px;
+.h-\[3\.8rem\] {
+  height: 3.8rem;
 }
 
-.max-h-\[calc\(100\%-60px\)\] {
-  max-height: calc(100% - 60px);
+.max-h-\[calc\(100\%-3\.8rem\)\] {
+  max-height: calc(100% - 3.8rem);
 }
 
 .max-h-full {
@@ -736,8 +736,8 @@ Ensure the default browser behavior of the `hidden` attribute.
     display: flex;
   }
 
-  .lg\:min-w-\[448px\] {
-    min-width: 448px;
+  .lg\:min-w-\[28rem\] {
+    min-width: 28rem;
   }
 
   .lg\:basis-1\/2 {
